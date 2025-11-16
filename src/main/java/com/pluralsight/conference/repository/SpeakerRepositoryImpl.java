@@ -3,9 +3,11 @@ package com.pluralsight.conference.repository;
 import com.pluralsight.conference.model.Speaker;
 import com.pluralsight.conference.repository.util.SpeakerRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
+import java.security.spec.NamedParameterSpec;
 import java.util.*;
 
 @Repository("speakerRepository")
@@ -88,6 +90,18 @@ public class SpeakerRepositoryImpl implements SpeakerRepository {
     @Override
     public void update(List<Object[]> pairs) {
         jdbcTemplate.batchUpdate("update speaker set skill = ? where id = ?", pairs);
+    }
+
+    @Override
+    public void delete(int id) {
+//        method 1
+//        jdbcTemplate.update("delete from speaker where id = ?", id);
+//      method 2
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
+
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("id", id);
+        namedParameterJdbcTemplate.update("delete from speaker where id = :id", paramMap);
     }
 
 }
